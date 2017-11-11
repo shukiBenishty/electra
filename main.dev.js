@@ -23,26 +23,20 @@ const store = new Store({
 const storeData = store.parseDataFile('./electra_store.json');
 const monitors = storeData.monitors;
 
-monitors.forEach( (m) => {
-  console.log(m.subscriptionName);
-});
-
-var dir_of_interest = "/Users/Oleg/Dev/electra/input";
-//client.capabilityCheck({optional:[], required:['relative_root']},
 client.capabilityCheck({optional:[], required:[]},
-   function (error, resp) {
-     if (error) {
-       console.log(error);
-       client.end();
-       return;
-     }
+//client.capabilityCheck({optional:[], required:['relative_root']},
+  function (error, resp) {
+    if (error) {
+      console.log(error);
+      client.end();
+      return;
+    }
 
-     console.log('Watchman capabilities checked!');
+    monitors.forEach( (m) => {
+      //console.log("\x1b[36m%s\x1b[0m", m.subscriptionName + ' ' + m.folder);
 
-     // Initiate the watch
-     client.command(['watch-project', dir_of_interest],
-        function (error, resp) {
-
+      client.command(['watch-project', m.folder],
+          function (error, resp) {
             if (error) {
               console.error('Error initiating watch:', error);
               return;
@@ -52,17 +46,18 @@ client.capabilityCheck({optional:[], required:[]},
             // 'error' information to the user, as it may suggest steps
             // for remediation
             if ('warning' in resp) {
-              console.log('warning: ', resp.warning);
+              console.log('\x1b[33mwarning: %s\x1b[0m', resp.warning);
             }
 
-            console.log('watch established on: ', resp.watch,
-              ' Relative_path:', resp.relative_path);
+            console.log('\x1b[36mwatch established on: %s Relative_path:%s\x1b[0m',
+                      resp.watch, resp.relative_path);
 
             make_subscription(client, resp.watch, resp.relative_path)
-        }
-      );
-   }
- );
+
+          });
+    });
+  }
+);
 
  // Subscription results are emitted via the subscription event.
   // Note that this emits for all subscriptions.  If you have
@@ -78,8 +73,8 @@ client.capabilityCheck({optional:[], required:[]},
   //       type: 'f' } ] }
  client.on('subscription', function (resp) {
 
-   if (resp.subscription !== 'mysubscription')
-    return;
+  //  if (resp.subscription !== 'mysubscription')
+  //   return;
 
     resp.files.forEach(function (file) {
         // convert Int64 instance to javascript integer
@@ -92,7 +87,7 @@ client.capabilityCheck({optional:[], required:[]},
  // `watch` is obtained from `resp.watch` in the `watch-project` response.
  // `relative_path` is obtained from `resp.relative_path` in the
  // `watch-project` response.
-function make_subscription(client, watch, relative_path) {
+function make_subscription(client, watch, relative_path, subscriptionName) {
 
     const sub = {
       // Match any `.js` file in the dir_of_interest
@@ -104,12 +99,12 @@ function make_subscription(client, watch, relative_path) {
         sub.relative_root = relative_path;
     }
 
-    client.command(['subscribe', watch, 'mysubscription', sub],
+    client.command(['subscribe', watch, subscriptionName, sub],
 
       function (error, resp) {
         if (error) {
           // Probably an error in the subscription criteria
-          console.error('failed to subscribe: ', error);
+          console.error('\x1b[41mfailed to subscribe: %s\x1b[0m', error);
           return;
         }
 
