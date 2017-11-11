@@ -36,11 +36,19 @@ const reducers = (state = INITIAL_STATE, action) => {
 
 }
 
-const store = createStore(reducers);
+const store = createStore(reducers,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 ipcRenderer.on('onFolderSubscription', (event, data) => {
 
-  console.log('Subscription ' + data.msg.subscription + ' satisfied');
+  const subscriptionName = data.msg.subscription;
+
+  console.log('Subscription ' + subscriptionName + ' satisfied');
+
+  store.dispatch({
+    type: 'SUBSCRIPTION_MET',
+    data: subscriptionName
+  });
 
 });
 
