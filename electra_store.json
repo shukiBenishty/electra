@@ -1,0 +1,22 @@
+{
+  "monitors": [
+    {
+      "id": 1,
+      "name": "First project",
+      "folder": "/Users/Oleg/Dev/electra/premiere",
+      "subscriptionName": "s1",
+      "schedule": {
+        "days" : [],
+        "frequency": 2
+      },
+      "notifications": 1
+    },
+    {
+      "id": 2,
+      "name": "פרויקט שני",
+      "folder": "/Users/Oleg/Dev/electra/secondary",
+      "subscriptionName": "s2",
+      "notifications": 3
+    }
+  ]
+}
