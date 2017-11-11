@@ -52,7 +52,7 @@ client.capabilityCheck({optional:[], required:[]},
             console.log('\x1b[36mwatch established on: %s Relative_path:%s\x1b[0m',
                       resp.watch, resp.relative_path);
 
-            make_subscription(client, resp.watch, resp.relative_path)
+            make_subscription(client, resp.watch, resp.relative_path, m.subscriptionName)
 
           });
     });
@@ -76,6 +76,12 @@ client.capabilityCheck({optional:[], required:[]},
   //  if (resp.subscription !== 'mysubscription')
   //   return;
 
+    mainWindow.webContents.send('onFolderSubscription', {
+      msg: {
+        subscription: resp.subscription
+      }
+    });
+
     resp.files.forEach(function (file) {
         // convert Int64 instance to javascript integer
         const mtime_ms = +file.mtime_ms;
@@ -90,8 +96,8 @@ client.capabilityCheck({optional:[], required:[]},
 function make_subscription(client, watch, relative_path, subscriptionName) {
 
     const sub = {
-      // Match any `.js` file in the dir_of_interest
-      expression: ["allof", ["match", "*.js"]],
+      // Match any ()`*.*`) file in the dir_of_interest
+      expression: ["allof", ["match", "*.*"]],
       // Which fields we're interested in
       fields: ["name", "size", "mtime_ms", "exists", "type"]
     };
@@ -104,11 +110,11 @@ function make_subscription(client, watch, relative_path, subscriptionName) {
       function (error, resp) {
         if (error) {
           // Probably an error in the subscription criteria
-          console.error('\x1b[41mfailed to subscribe: %s\x1b[0m', error);
+          console.error('\x1b[41mFailed to subscribe: %s\x1b[0m', error);
           return;
         }
 
-        console.log('subscription ' + resp.subscribe + ' established');
+        console.log('Subscription ' + resp.subscribe + ' established');
       });
 };
 
