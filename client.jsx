@@ -38,6 +38,12 @@ const reducers = (state = INITIAL_STATE, action) => {
 
 const store = createStore(reducers);
 
+ipcRenderer.on('onFolderSubscription', (event, data) => {
+
+  console.log('Subscription ' + data.msg.subscription + ' satisfied');
+
+});
+
 ipcRenderer.on('initStore', (event, data) => {
 
   console.log('Inside initStore (IPC): ' +  data.msg);
