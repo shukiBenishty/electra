@@ -73,12 +73,10 @@ client.capabilityCheck({optional:[], required:[]},
   //       type: 'f' } ] }
  client.on('subscription', function (resp) {
 
-  //  if (resp.subscription !== 'mysubscription')
-  //   return;
-
     mainWindow.webContents.send('onFolderSubscription', {
       msg: {
-        subscription: resp.subscription
+        subscription: resp.subscription,
+        time: 0 //file.mtime_ms
       }
     });
 
@@ -194,12 +192,7 @@ app.on('ready', async() => {
   menuBuilder.buildMenu();
 
   ipcMain.on('async-message', (event, props) => {
-    // dialog.showMessageBox({
-    //   type: 'info',
-    //   title: 'Greeting',
-    //   message: 'Hello', // props.greeting,
-    //   buttons: []
-    // });
+
     const folder =
       dialog.showOpenDialog(mainWindow, {
             properties: ['openDirectory']
