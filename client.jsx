@@ -11,7 +11,9 @@ import App from './app/App.jsx';
 
 const INITIAL_STATE = {
   monitors: [],
-  activeMonitorId: 0
+  activeMonitorId: 0,
+  lastSubscription: '',
+  lastSubscriptionTime: 0
 };
 
 const reducers = (state = INITIAL_STATE, action) => {
@@ -25,6 +27,11 @@ const reducers = (state = INITIAL_STATE, action) => {
 
     case 'ACTIVE_MONITOR': {
       return _.assign({}, state, {activeMonitorId: action.data});
+    }
+
+    case 'SUBSCRIPTION_MET': {
+      return _.assign({}, state, { lastSubscription: action.data.name,
+                                   lastSubscriptionTime: action.data.time });
     }
 
     default:
@@ -42,12 +49,14 @@ const store = createStore(reducers,
 ipcRenderer.on('onFolderSubscription', (event, data) => {
 
   const subscriptionName = data.msg.subscription;
+  const _time = data.msg.time;
 
   console.log('Subscription ' + subscriptionName + ' satisfied');
 
   store.dispatch({
     type: 'SUBSCRIPTION_MET',
-    data: subscriptionName
+    data: { name: subscriptionName,
+            time: _time }
   });
 
 });
