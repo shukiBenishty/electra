@@ -73,16 +73,17 @@ client.capabilityCheck({optional:[], required:[]},
   //       type: 'f' } ] }
  client.on('subscription', function (resp) {
 
-    mainWindow.webContents.send('onFolderSubscription', {
-      msg: {
-        subscription: resp.subscription,
-        time: 0 //file.mtime_ms
-      }
-    });
 
     resp.files.forEach(function (file) {
         // convert Int64 instance to javascript integer
         const mtime_ms = +file.mtime_ms;
+
+        mainWindow.webContents.send('onFolderSubscription', {
+          msg: {
+            subscription: resp.subscription,
+            time: 0 //file.mtime_ms
+          }
+        });
 
         console.log('file changed: ' + file.name, mtime_ms);
     });
