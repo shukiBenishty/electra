@@ -71,7 +71,8 @@ class MonitorsList extends React.Component {
 const mapStateToProps = state => {
 
   return {
-    monitors: (state) ? state.monitors : ''
+    monitors: (state) ? state.monitors : '',
+    lastSubscription: state.lastSubscription 
   };
 };
 
