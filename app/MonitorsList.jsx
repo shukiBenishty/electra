@@ -32,6 +32,19 @@ class MonitorsList extends React.Component {
     //console.log(props);
   }
 
+  componentWillUpdate(nextProps, nextState) {
+    if( nextProps.lastSubscription === '' ) {
+      return false;
+    } else {
+        this.props.monitors.forEach( (monitor, index) => {
+          if( monitor.subscriptionName === nextProps.lastSubscription )
+              this.props.monitors[index].notifications++;
+        });
+
+        return true;
+    }
+  }
+
   onClickProject = (event: object) => {
     console.log(event.currentTarget.dataset.id);
 
@@ -72,7 +85,8 @@ const mapStateToProps = state => {
 
   return {
     monitors: (state) ? state.monitors : '',
-    lastSubscription: state.lastSubscription 
+    lastSubscription: state.lastSubscription,
+    lastSubscriptionTime: state.lastSubscriptionTime
   };
 };
 
